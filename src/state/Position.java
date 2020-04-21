@@ -1,5 +1,6 @@
 package state;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Position {
@@ -34,6 +35,12 @@ public class Position {
         return y;
     }
 
+    public ArrayList<Integer> toListForRMC(){
+        ArrayList<Integer> xs = new ArrayList<>();
+        xs.add(y); // Row
+        xs.add(x); // Column
+        return xs;
+    }
     @Override
     public String toString() {
         return "Position{" +

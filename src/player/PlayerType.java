@@ -1,15 +1,26 @@
 package player;
 
-public enum PlayerType {
-    //Test(new TestPlayer());
-    Test(new RandomPlayer());
+import state.Team;
 
-    private AbstractPlayer player;
-    PlayerType(AbstractPlayer p){
+import java.lang.reflect.InvocationTargetException;
+
+public enum PlayerType {
+    Test(TestPlayer.class),
+    Random(RandomPlayer.class),
+    RMCQueenAI(RMCQueenAIPlayer.class);
+
+    private Class<? extends AbstractPlayer> player;
+    PlayerType(Class<? extends AbstractPlayer> p){
         this.player = p;
     }
 
-    public AbstractPlayer getPlayer(){
-        return this.player;
+    public AbstractPlayer createPlayer(Team team){
+        try {
+            return this.player.getDeclaredConstructor(Team.class).newInstance(team);
+        } catch (Exception e){
+            System.out.println("Failed to do my black magic reflect bullshit");
+            System.exit(1);
+            return null;
+        }
     }
 }

@@ -2,6 +2,7 @@ package state;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BoardPiece {
     private final PieceType type;
@@ -31,73 +32,30 @@ public class BoardPiece {
     }
 
     public void moveTo(Position newPos) {
-        if(getValidMoves(this.pos).contains(newPos)) {
-            this.pos = newPos;
-        } else {
-            System.out.println("attempted to make an invalid move " + this.pos + " to " + newPos);
-        }
+        this.pos = newPos;
     }
 
-    public static List<Position> getValidMoves(Position p){
-        List<Position> validMoves = new ArrayList<>();
-        int x = p.getX();
-        int y = p.getY();
+    @Override
+    public String toString() {
+        return "BoardPiece{" +
+                "type=" + type +
+                ", team=" + team +
+                ", pos=" + pos +
+                '}';
+    }
 
-        for(int i = 0; i <= 9; i ++){
-            validMoves.add(new Position(i,y));
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoardPiece that = (BoardPiece) o;
+        return type == that.type &&
+                team == that.team &&
+                pos.equals(that.pos);
+    }
 
-        for(int i = 0; i <= 9; i ++){
-            validMoves.add(new Position(x,i));
-        }
-
-        // (x,y) gets added twice
-        validMoves.remove(new Position(x,y));
-
-        // UP LEFT diagonal
-        int tempX = x;
-        int tempY = y;
-        tempX-=1;
-        tempY-=1;
-        while(tempX >= 0 && tempY >= 0){
-            validMoves.add(new Position(tempX, tempY));
-            tempX-=1;
-            tempY-=1;
-        }
-
-        // UP RIGHT diagonal
-        tempX = x;
-        tempY = y;
-        tempX+=1;
-        tempY-=1;
-        while(tempX <= 9 && tempY >= 0){
-            validMoves.add(new Position(tempX, tempY));
-            tempX+=1;
-            tempY-=1;
-        }
-
-        // DOWN LEFT diagonal
-        tempX = x;
-        tempY = y;
-        tempX-=1;
-        tempY+=1;
-        while(tempX >= 0 && tempY <= 9){
-            validMoves.add(new Position(tempX, tempY));
-            tempX-=1;
-            tempY+=1;
-        }
-
-        // DOWN RIGHT diagonal
-        tempX = x;
-        tempY = y;
-        tempX+=1;
-        tempY+=1;
-        while(tempX <= 9 && tempY <= 9 ){
-            validMoves.add(new Position(tempX, tempY));
-            tempX+=1;
-            tempY+=1;
-        }
-
-        return validMoves;
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, team, pos);
     }
 }
