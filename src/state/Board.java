@@ -2,9 +2,7 @@ package state;
 
 import ygraphs.ai.smart_fox.games.Queen;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 public class Board {
     private List<BoardPiece> pieces = new ArrayList<>();
@@ -58,13 +56,13 @@ public class Board {
             System.exit(1);
         }
 
-        List<AbstractMap.SimpleEntry<Position,List<Position>>> movesAndArrows = getValidMoves(queen.getPos());
-        List<Position> validMoves = movesAndArrows.stream().map(x -> x.getKey()).collect(Collectors.toList());
+        Map<Position,List<Position>> movesAndArrows = getValidMoves(queen.getPos());
+        Set<Position> validMoves = movesAndArrows.keySet();
         if (validMoves.contains(move)) {
             Position oldPos = queen.getPos();
             queen.moveTo(move);
 
-            List<Position> validArrows = movesAndArrows.get(validMoves.indexOf(move)).getValue();
+            List<Position> validArrows = movesAndArrows.get(move);
             if(validArrows.contains(arrow)){
                 pieces.add(new BoardPiece(BoardPiece.PieceType.ARROW, team, arrow));
                 moveLog.add(new Move(oldPos, move, arrow, team));
@@ -88,13 +86,13 @@ public class Board {
         return xs.get(0);
     }
 
-    public List<AbstractMap.SimpleEntry<Position,List<Position>>> getValidMoves(Position p){
-        return getValidMoves(p, true);
+    public Map<Position,List<Position>> getValidMoves(Position startPosition){
+        return getValidMoves(startPosition, true);
     }
 
     // Raw because it does not account for whatever move may have been made to the board before attempting to fire the arrow
-    public List<Position> getValidArrowsRaw(Position p){
-        return getValidMoves(p, false).stream().map(x -> x.getKey()).collect(Collectors.toList()); //Drop all the "arrow" positions;
+    public List<Position> getValidArrowsRaw(Position startPosition){
+        return new ArrayList<>(getValidMoves(startPosition, false).keySet()); //Drop all the "arrow" positions;
     }
 
     // Moves and checks for valid arrows for the given queen + move
@@ -106,8 +104,8 @@ public class Board {
         return arrows;
     }
 
-    private List<AbstractMap.SimpleEntry<Position,List<Position>>> getValidMoves(Position startPosition, boolean recurse){
-        List<AbstractMap.SimpleEntry<Position,List<Position>>>  validMoves = new ArrayList<>();
+    private Map<Position,List<Position>> getValidMoves(Position startPosition, boolean recurse){
+        Map<Position,List<Position>>  validMoves = new HashMap<>();
         List<Position> allPositions = pieces.stream().map(x -> x.getPos()).collect(Collectors.toList());
 
         int x = startPosition.getX();
@@ -222,14 +220,14 @@ public class Board {
      * @param newPos
      * @param startPosition
      */
-    private void checkArrows(boolean recurse, List<AbstractMap.SimpleEntry<Position,List<Position>>> validMoves, Position newPos, Position startPosition){
+    private void checkArrows(boolean recurse, Map<Position,List<Position>> validMoves, Position newPos, Position startPosition){
         // If we can't shoot an arrow after the move then it's not a valid move
         if(!recurse) {
-            validMoves.add(new AbstractMap.SimpleEntry<>(newPos, null));
+            validMoves.put(newPos, null);
         }else{
             List<Position> arrows = moveAndGetValidArrows(getQueenAt(startPosition), newPos);
             if(!arrows.isEmpty()){
-                validMoves.add(new AbstractMap.SimpleEntry<>(newPos, arrows));
+                validMoves.put(newPos, arrows);
             }
         }
     }

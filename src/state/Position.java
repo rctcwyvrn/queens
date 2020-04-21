@@ -62,4 +62,10 @@ public class Position {
     public int hashCode() {
         return Objects.hash(x, y);
     }
+
+    public int dist(Position other) {
+        int xDist = Math.abs(this.x - other.getX());
+        int yDist = Math.abs(this.y - other.getY());
+        return Math.max(xDist, yDist); //I'm pretty sure this is right
+    }
 }
