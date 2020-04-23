@@ -15,4 +15,9 @@ public class TestPlayer extends AbstractPlayer{
     public Board play(Board b) {
         return b;
     }
+
+    @Override
+    public void cleanup() {
+
+    }
 }

@@ -35,28 +35,32 @@ public class GameRunner {
         System.out.println("Player #2 (BLACK): " + p2Type + " | " + player2);
 
         Board state = new Board();
-        if(PRINT_BOARDS) System.out.println(state.displayBoard());
+        if(PRINT_BOARDS || Board.DEBUG) System.out.println(state.displayBoard());
         int totalRounds = 0;
         long startTime = System.currentTimeMillis();
         while(true){
             if(!player1.hasMoves(state)){
-                if(PRINT_BOARDS) System.out.println(state.displayBoard());
+                if(PRINT_BOARDS || Board.DEBUG) System.out.println(state.displayBoard());
                 System.out.println("Game over! Player 2 (BLACK) wins");
+                player1.cleanup();
+                player2.cleanup();
                 return new GameResult(Team.BLACK, p2Type, state.getMoveLog(), totalRounds, System.currentTimeMillis() - startTime);
             }
 
             state = player1.play(state);
-            if(PRINT_BOARDS) System.out.println(state.displayBoard());
+            if(PRINT_BOARDS || Board.DEBUG) System.out.println(state.displayBoard());
             totalRounds+=1;
 
             if(!player2.hasMoves(state)){
-                if(PRINT_BOARDS) System.out.println(state.displayBoard());
+                if(PRINT_BOARDS || Board.DEBUG) System.out.println(state.displayBoard());
                 System.out.println("Game over! Player 1 (WHITE) wins");
+                player1.cleanup();
+                player2.cleanup();
                 return new GameResult(Team.WHITE, p1Type, state.getMoveLog(), totalRounds, System.currentTimeMillis() - startTime);
             }
 
             state = player2.play(state);
-            if(PRINT_BOARDS) System.out.println(state.displayBoard());
+            if(PRINT_BOARDS || Board.DEBUG) System.out.println(state.displayBoard());
             totalRounds+=1;
         }
     }

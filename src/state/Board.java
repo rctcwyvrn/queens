@@ -5,7 +5,7 @@ import ygraphs.ai.smart_fox.games.Queen;
 import java.util.*;
 import java.util.stream.Collectors;
 public class Board {
-    private static final boolean DEBUG = true;
+    public static final boolean DEBUG = true;
     private List<BoardPiece> pieces = new ArrayList<>();
     private List<Move> moveLog = new ArrayList<>();
 

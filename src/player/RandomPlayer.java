@@ -19,4 +19,9 @@ public class RandomPlayer extends AbstractPlayer{
     public Board play(Board board) {
         return playRandomMove(board);
     }
+
+    @Override
+    public void cleanup() {
+
+    }
 }

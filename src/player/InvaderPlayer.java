@@ -1,6 +1,7 @@
 package player;
 
 import state.Board;
+import state.BoardPiece;
 import state.Move;
 import state.Team;
 import util.InvaderGameLog;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.security.Key;
+import java.util.List;
 
 /**
  * Plays using the invader2.1 executable
@@ -24,8 +27,10 @@ public class InvaderPlayer extends AbstractPlayer {
 
     private Robot invaderRobot;
     private Process invaderProc;
-    private File logFileCopy = new File("./resources/tmp/x.txt");
-    //private File logFileCopy = new File("./resources/tmp/copy.txt");
+    private File logFileIn = new File("./resources/tmp/0.txt");
+    private File logFileOut= new File("./resources/tmp/0i.txt");
+    private int invaderPlays = 0;
+
     public InvaderPlayer(Team team) {
         super(team);
         try {
@@ -42,36 +47,49 @@ public class InvaderPlayer extends AbstractPlayer {
 
     @Override
     public Board play(Board board) {
-        try {
-            if(!board.getMoveLog().isEmpty()) {
-                //logFileCopy.delete();
-                InvaderGameLog.writeLog(logFileCopy, board.getMoveLog());
-                //Files.move(Path.of(logFileCopy.getPath()), Path.of("./resources/tmp/x.txt"), StandardCopyOption.ATOMIC_MOVE);
+        int tries = 0;
+        boolean overwrite = false;
+        while(true) {
+            try {
+                logFileIn = new File("./resources/tmp/" + invaderPlays + ".txt");
+                logFileOut = new File("./resources/tmp/" + invaderPlays + "i.txt");
+
+                System.out.println("Writing new queen and arrow positions to log file " + logFileIn.getPath());
+                List<BoardPiece> arrows = board.getPieces(Team.WHITE, BoardPiece.PieceType.ARROW);
+                arrows.addAll(board.getPieces(Team.BLACK, BoardPiece.PieceType.ARROW));
+                InvaderGameLog.writeLog(logFileIn,
+                        board.getPieces(Team.WHITE, BoardPiece.PieceType.QUEEN),
+                        board.getPieces(Team.BLACK, BoardPiece.PieceType.QUEEN),
+                        arrows);
+
+                invaderProc = Runtime.getRuntime().exec("./resources/invader.exe");
+                Thread.sleep(1500);
+                loadBoard();
+
+                //Thread.sleep(1000);
+                getMove();
+                Thread.sleep(500);
+
+                saveBoard(overwrite);
+                Thread.sleep(1500);
+
+                Move newMove = InvaderGameLog.getLastMove(logFileOut);
+                board.moveQueenAndFire(team, board.getQueenAt(newMove.getQueenPos()), newMove.getQueenMove(), newMove.getArrow());
+                invaderPlays+=1;
+                return board;
+            } catch (Exception e) {
+                e.printStackTrace();
+                tries+=1;
+                overwrite = true;
+                System.out.println("InvaderAI failed! Tries = " + tries);
+                if(tries >= 3){
+                    System.out.println("Exiting :c");
+                    System.exit(1);
+                }
+            } finally{
+                invaderProc.destroy();
             }
-
-            invaderProc = Runtime.getRuntime().exec("./resources/invader.exe");
-            Thread.sleep(1000);
-            loadBoard();
-
-            //Thread.sleep(1000);
-            getMove();
-
-            Thread.sleep(1000);
-            saveBoard();
-            Thread.sleep(1000);
-            invaderProc.destroy();
-            Thread.sleep(1000);
-
-            //Files.move(Path.of("./resources/tmp/x.txt"), Path.of(logFileCopy.getPath()), StandardCopyOption.ATOMIC_MOVE);
-            Move newMove = InvaderGameLog.getLastMove(logFileCopy);
-            board.moveQueenAndFire(team, board.getQueenAt(newMove.getQueenPos()), newMove.getQueenMove(), newMove.getArrow());
-        } catch(Exception e){
-            e.printStackTrace();
-            System.out.println("InvaderAI failed!");
-            System.exit(1);
         }
-
-        return board;
     }
 
     public void loadBoard() throws InterruptedException {
@@ -81,27 +99,13 @@ public class InvaderPlayer extends AbstractPlayer {
         //Press browse
         click(471, 312);
 
+        Thread.sleep(200); // wait for the window
+
         //Type in the filename
-//        type(KeyEvent.VK_R);
-//        type(KeyEvent.VK_E);
-//        type(KeyEvent.VK_S);
-//        type(KeyEvent.VK_O);
-//        type(KeyEvent.VK_U);
-//        type(KeyEvent.VK_R);
-//        type(KeyEvent.VK_C);
-//        type(KeyEvent.VK_E);
-//        type(KeyEvent.VK_S);
-//        type(KeyEvent.VK_SLASH);
-//        type(KeyEvent.VK_T);
-//        type(KeyEvent.VK_M);
-//        type(KeyEvent.VK_P);
-//        type(KeyEvent.VK_SLASH);
-        Thread.sleep(200); //wait for the window to open
-        type(KeyEvent.VK_X);
-//        type(KeyEvent.VK_PERIOD);
-//        type(KeyEvent.VK_T);
-//        type(KeyEvent.VK_X);
-//        type(KeyEvent.VK_T);
+        if(invaderPlays >= 10) {
+            type((int) (KeyEvent.VK_0 + Math.ceil(invaderPlays/10)));
+        }
+        type(KeyEvent.VK_0 + (invaderPlays % 10));
 
         //Press open
         type(KeyEvent.VK_ENTER);
@@ -128,22 +132,29 @@ public class InvaderPlayer extends AbstractPlayer {
         // stop game
         click(BUTTON_ROW_X_PAUSE+20, BUTTON_ROW_Y);
     }
-    public void saveBoard() throws Exception{
+    public void saveBoard(boolean overwrite) throws Exception{
+        //click the "win" button just in case we maybe won!
+        click(422, 294);
+        Thread.sleep(200);
+
         //click save
         click(BUTTON_ROW_X_PAUSE+80, BUTTON_ROW_Y);
 
         Thread.sleep(200); //wait for the window to open
 
         //enter filename
-        type(KeyEvent.VK_X);
-
-        Thread.sleep(500);
+        if(invaderPlays >= 10) {
+            type((int) (KeyEvent.VK_0 + Math.ceil(invaderPlays/10)));
+        }
+        type(KeyEvent.VK_0 + (invaderPlays % 10));
+        type(KeyEvent.VK_I);
         type(KeyEvent.VK_ENTER);
+        if(overwrite) {
+            type(KeyEvent.VK_LEFT);
+            Thread.sleep(500);
 
-        type(KeyEvent.VK_LEFT);
-        Thread.sleep(500);
-
-        type(KeyEvent.VK_ENTER);
+            type(KeyEvent.VK_ENTER);
+        }
     }
 
     private void type(int key) {
@@ -158,25 +169,15 @@ public class InvaderPlayer extends AbstractPlayer {
     }
 
     public void cleanup(){
-        invaderProc.destroy();
+        for(File f: new File("./resources/tmp").listFiles()){
+            f.delete();
+        }
     }
 
     public static void main(String[] args) throws Exception{
-        System.out.println("Starting");
         InvaderPlayer player = new InvaderPlayer(Team.WHITE);
-//
-        for(int i = 0; i < 10; i++) {
-            Thread.sleep(1000);
-            player.loadBoard();
-
-            //Thread.sleep(1000);
-            player.getMove();
-            //System.out.println("Got move");
-
-            Thread.sleep(1000);
-            //System.out.println("Saving game");
-            player.saveBoard();
-        }
+        player.cleanup();
+        System.out.println("Starting");
 
 //        Thread.sleep(5000);  // some time for user to position mouse
 //        Point spot = MouseInfo.getPointerInfo().getLocation();
@@ -184,9 +185,7 @@ public class InvaderPlayer extends AbstractPlayer {
 //                String.valueOf(spot.getX())
 //                        +","+
 //                        String.valueOf(spot.getY()));
-
+//
 //        Thread.sleep(1000);
-//        System.out.println("Destroying");
-//        player.cleanup();
     }
 }

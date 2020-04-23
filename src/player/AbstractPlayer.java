@@ -16,6 +16,7 @@ public abstract class AbstractPlayer {
     }
 
     public abstract Board play(Board board);
+    public abstract void cleanup();
 
     public boolean hasMoves(Board board){
         for(BoardPiece queen: board.getPieces(this.team, BoardPiece.PieceType.QUEEN)){

@@ -31,4 +31,9 @@ public class RMCQueenAIPlayer extends AbstractPlayer{
         board.moveQueenAndFire(team, target, AIPlay.get(1), AIPlay.get(2));
         return board;
     }
+
+    @Override
+    public void cleanup() {
+        client.reset();
+    }
 }

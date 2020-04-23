@@ -62,4 +62,9 @@ public class AssasinPlayer extends AbstractPlayer{
             return playRandomMove(board);
         }
     }
+
+    @Override
+    public void cleanup() {
+
+    }
 }

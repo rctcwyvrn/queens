@@ -1,8 +1,6 @@
 package util;
 
-import state.Move;
-import state.Position;
-import state.Team;
+import state.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -20,10 +18,10 @@ public class InvaderGameLog {
             "\n" +
             "Players:\n" +
             "  Red  - Computer (~3s)\n" +
-            "  Blue - Computer (~3s)\n" +
+            "  Blue - Human Player (~3s)\n" +
             "\n" +
             "RED-TYPE=1:1:5:3:Computer\n" +
-            "BLUE-TYPE=1:1:5:3:Computer\n" +
+            "BLUE-TYPE=0:1:5:25000:Human Player\n" +
             "\n" +
             "Game Time:\n" +
             "  Red  - 00:00:00\n" +
@@ -43,24 +41,27 @@ public class InvaderGameLog {
             "<GAME-INFO-END>\n" +
             "\n" +
             "<BOARD-SETUP-START>\n" +
-            "\n" +
-            "RED-AMAZONS=A4, D1, G1, J4\n" +
-            "BLUE-AMAZONS=A7, D10, G10, J7\n" +
-            "ARROWS=\n" +
-            "COLUMNS=10\n" +
-            "ROWS=10\n" +
-            "\n" +
-            "<BOARD-SETUP-END>\n" +
-            "\n" +
-            "<MOVE-HISTORY-START>\n" +
-            "\n" +
-            "Red/Blue\n";
-
-    private static final String FILE_SUFFIX = "\n" +
-            "<MOVE-HISTORY-END>";
+            "\n";
+    private static final String RED_AMAZONS =
+            "RED-AMAZONS="; //A4, D1, G1, J4\n" +
+    private static final String BLUE_AMAZONS =
+            "BLUE-AMAZONS=";//A7, D10, G10, J7\n";
+    private static final String ARROWS =
+            "ARROWS=";
+    private static final String FILE_SUFFIX =
+                    "COLUMNS=10\n" +
+                    "ROWS=10\n" +
+                    "\n" +
+                    "<BOARD-SETUP-END>\n" +
+                    "\n" +
+                    "<MOVE-HISTORY-START>\n" + "<MOVE-HISTORY-END>";
     
-    public static void writeLog(File destination, List<Move> moves){
-        String data = FILE_PREFIX + translateMoves(moves) + FILE_SUFFIX;
+    public static void writeLog(File destination, List<BoardPiece> redQueens, List<BoardPiece> blueQueens, List<BoardPiece> arrows){
+        String data = FILE_PREFIX
+                + RED_AMAZONS + String.join(", ", translatePositions(redQueens)) + "\n"
+                + BLUE_AMAZONS + String.join(", ", translatePositions(blueQueens)) + "\n"
+                + ARROWS + String.join(", ", translatePositions(arrows)) + "\n"
+                + FILE_SUFFIX;
         try(OutputStream os = new FileOutputStream(destination)){
             os.write(data.getBytes(), 0, data.length());
         } catch (FileNotFoundException e) {
@@ -70,34 +71,42 @@ public class InvaderGameLog {
         }
     }
 
-    private static String translateMoves(List<Move> moves) {
-        String data = "";
-        int moveCount = 1;
-        for(Move move: moves){
-            String latestMove = "  ";
-            String yStartTrans = "" + (10 - move.getQueenPos().getY());
-            String xStartTrans = columnToLetter(move.getQueenPos().getY());
-
-            String yMoveTrans = "" + (10 - move.getQueenMove().getY());
-            String xMoveTrans = columnToLetter(move.getQueenMove().getY());
-
-            String yArrowTrans = "" + (10 - move.getArrow().getY());
-            String xArrowTrans = columnToLetter(move.getArrow().getY());
-
-            latestMove += moveCount + ". ";
-            latestMove += xStartTrans + yStartTrans + " - ";
-            latestMove += xMoveTrans + yMoveTrans + " ";
-            latestMove += "(" + xArrowTrans + yArrowTrans + ")";
-
-            if(moveCount % 2 == 0){
-                data += latestMove + "\n";
-            }else{
-                data += latestMove + "\t";
-            }
-            moveCount+=1;
+    private static List<String> translatePositions(List<BoardPiece> queens) {
+        List<String> out = new ArrayList<>();
+        for(BoardPiece piece: queens){
+            out.add(columnToLetter(piece.getPos().getX()) + (10 - piece.getPos().getY()));
         }
-        return data;
+        return out;
     }
+
+//    private static String translateMoves(List<Move> moves) {
+//        String data = "";
+//        int moveCount = 1;
+//        for(Move move: moves){
+//            String latestMove = "";
+//            String yStartTrans = "" + (10 - move.getQueenPos().getY());
+//            String xStartTrans = columnToLetter(move.getQueenPos().getY());
+//
+//            String yMoveTrans = "" + (10 - move.getQueenMove().getY());
+//            String xMoveTrans = columnToLetter(move.getQueenMove().getY());
+//
+//            String yArrowTrans = "" + (10 - move.getArrow().getY());
+//            String xArrowTrans = columnToLetter(move.getArrow().getY());
+//
+//            latestMove += moveCount + ". ";
+//            latestMove += xStartTrans + yStartTrans + " - ";
+//            latestMove += xMoveTrans + yMoveTrans + " ";
+//            latestMove += "(" + xArrowTrans + yArrowTrans + ")";
+//
+//            if(moveCount % 2 == 0){
+//                data += latestMove + "\n";
+//            }else{
+//                data += "  " + latestMove + "\t";
+//            }
+//            moveCount+=1;
+//        }
+//        return data;
+//    }
 
     private static String columnToLetter(int y) {
         String[] letters = new String[]{"A","B","C","D","E","F","G","H","I","J"};
@@ -132,67 +141,79 @@ public class InvaderGameLog {
         }
     }
 
-    public static Move getLastMove(File logFile) {
-        try {
-            FileReader fr = new FileReader(logFile);
-            BufferedReader reader = new BufferedReader(fr);
-            List<String> tmp = new ArrayList<String>();
-            String ch = "";
-            do {
-                ch = reader.readLine();
-                tmp.add(ch);
-            } while (ch != null);
-            for(int i=tmp.size()-1;i>=0;i--) {
-                String line = tmp.get(i);
-                if(line == null){
-                    continue;
-                }
-                line = line.trim();
-                if(line.contains(".")){
-                    System.out.println("FOUND THE GOOD LINE: " + line);
-                    int startIndex = line.lastIndexOf(".");
-                    String moveStr = line.substring(startIndex + 1).trim();
-                    System.out.println("movestr: " + moveStr);
-                    StringCharacterIterator it = new StringCharacterIterator(moveStr);
-
-                    int xMove = letterToColumn(it.current());
-                    int yMove = Integer.parseInt(Character.toString(it.next()));
-
-                    it.next(); //space
-                    it.next(); //dash
-                    it.next(); //space
-
-                    int xQueen = letterToColumn(it.next());
-                    int yQueen = Integer.parseInt(Character.toString(it.next()));
-
-                    it.next(); //space
-                    it.next(); //open bracket
-
-                    int xArrow = letterToColumn(it.next());
-                    int yArrow = Integer.parseInt(Character.toString(it.next()));
-
-                    Move aiMove =  new Move(new Position(xQueen, yQueen), new Position(xMove, yMove), new Position(xArrow, yArrow), Team.BLACK);
-                    System.out.println("Ai made the move " + aiMove);
-                    return aiMove;
-                }
+    public static Move getLastMove(File logFile) throws Exception{
+        FileReader fr = new FileReader(logFile);
+        BufferedReader reader = new BufferedReader(fr);
+        List<String> tmp = new ArrayList<String>();
+        String ch = "";
+        do {
+            ch = reader.readLine();
+            tmp.add(ch);
+        } while (ch != null);
+        for(int i=tmp.size()-1;i>=0;i--) {
+            String line = tmp.get(i);
+            if(line == null){
+                continue;
             }
-            System.out.println("Failed to find any move lines???");
-            System.exit(1);
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-            return null;
+            line = line.trim();
+            if(line.contains(".")){
+                int startIndex = line.indexOf("."); //first index so we grab only hte first move if the AI somehow plays multiple
+                String moveStr = line.substring(startIndex + 1).trim();
+                //System.out.println("movestr: " + moveStr);
+                StringCharacterIterator it = new StringCharacterIterator(moveStr);
+
+                Position queen = parsePosition(it, true);
+
+                it.next(); //space
+                it.next(); //dash
+                it.next(); //space
+
+                Position move = parsePosition(it, false);
+
+                it.next(); //space
+                it.next(); //open bracket
+
+                Position arrow = parsePosition(it, false);
+                Move aiMove =  new Move(queen, move, arrow, Team.BLACK);
+                System.out.println("Ai made the move " + aiMove);
+                return aiMove;
+            }
         }
+        System.out.println("Failed to find any move lines???");
+        reader.close();
+        fr.close();
+        //System.exit(1);2i
+
+
+        throw new Exception("fuk");
+    }
+    private static Position parsePosition(StringCharacterIterator it, boolean start){
+        int x;
+        if(start){
+            x = letterToColumn(it.current());
+        }else{
+            x = letterToColumn(it.next());
+        }
+        int yCheck = Integer.parseInt(Character.toString(it.next()));
+        if(yCheck == 1){
+            if(it.next() == '0') {
+                yCheck = 10;
+            }else{
+                it.previous();
+            }
+        }
+        int y = 10 - yCheck;
+        return new Position(x,y);
     }
 
-    public static void main(String[] args){
-        System.out.println(getLastMove(new File("./resources/tmp/x.txt")));
-//        List<Move> test = new ArrayList<>();
-//        test.add(new Move(new Position(0, 0), new Position(1, 1), new Position(5, 5), Team.WHITE));
-//        test.add(new Move(new Position(0, 0), new Position(1, 1), new Position(5, 5), Team.WHITE));
-//        test.add(new Move(new Position(0, 0), new Position(1, 1), new Position(5, 5), Team.WHITE));
-//        test.add(new Move(new Position(0, 0), new Position(1, 1), new Position(5, 5), Team.WHITE));
-//        System.out.println(FILE_PREFIX + translateMoves(test) + FILE_SUFFIX);
+    public static void main(String[] args) throws Exception{
+        //System.out.println(getLastMove(new File("./resources/tmp/x.txt")));
+        Board board = new Board();
+        List<BoardPiece> arrows = board.getPieces(Team.WHITE, BoardPiece.PieceType.ARROW);
+        arrows.addAll(board.getPieces(Team.BLACK, BoardPiece.PieceType.ARROW));
+        InvaderGameLog.writeLog(new File("./resources/tmp/i_hate_myself.txt"),
+                board.getPieces(Team.WHITE, BoardPiece.PieceType.QUEEN),
+                board.getPieces(Team.BLACK, BoardPiece.PieceType.QUEEN),
+                arrows);
     }
 }

@@ -46,4 +46,9 @@ public class HeadshotsOnlyPlayer extends AbstractPlayer {
         board.moveQueenAndFire(team, queen, move, shot);
         return board;
     }
+
+    @Override
+    public void cleanup() {
+
+    }
 }
