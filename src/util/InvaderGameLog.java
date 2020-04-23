@@ -10,15 +10,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static state.Team.WHITE;
+
 /**
  * Methods for loading the game log/parsing the move made by the AI and methods for generating a new log with a new move in it
  */
 public class InvaderGameLog {
-    private static final String FILE_PREFIX = "<GAME-INFO-START>\n" +
+    private static final String FILE_PREFIX= "<GAME-INFO-START>\n" +
             "\n" +
             "Players:\n" +
             "  Red  - Computer (~3s)\n" +
-            "  Blue - Human Player (~3s)\n" +
+            "  Blue - Human Player\n" +
             "\n" +
             "RED-TYPE=1:1:5:3:Computer\n" +
             "BLUE-TYPE=0:1:5:25000:Human Player\n" +
@@ -48,20 +50,37 @@ public class InvaderGameLog {
             "BLUE-AMAZONS=";//A7, D10, G10, J7\n";
     private static final String ARROWS =
             "ARROWS=";
-    private static final String FILE_SUFFIX =
-                    "COLUMNS=10\n" +
-                    "ROWS=10\n" +
-                    "\n" +
-                    "<BOARD-SETUP-END>\n" +
-                    "\n" +
-                    "<MOVE-HISTORY-START>\n" + "<MOVE-HISTORY-END>";
+
+    private static final String FILE_SUFFIX= "COLUMNS=10\n" +
+            "ROWS=10\n" +
+            "\n" +
+            "<BOARD-SETUP-END>\n" +
+            "\n" +
+            "<MOVE-HISTORY-START>\n" +
+            "<MOVE-HISTORY-END>";
     
-    public static void writeLog(File destination, List<BoardPiece> redQueens, List<BoardPiece> blueQueens, List<BoardPiece> arrows){
-        String data = FILE_PREFIX
-                + RED_AMAZONS + String.join(", ", translatePositions(redQueens)) + "\n"
-                + BLUE_AMAZONS + String.join(", ", translatePositions(blueQueens)) + "\n"
-                + ARROWS + String.join(", ", translatePositions(arrows)) + "\n"
-                + FILE_SUFFIX;
+    public static void writeLog(Team team, File destination, List<Move> moves, List<BoardPiece> redQueens, List<BoardPiece> blueQueens, List<BoardPiece> arrows){
+        //String data = team.equals(Team.WHITE) ? FILE_PREFIX_1_WHITE: FILE_PREFIX_1_BLACK;
+        String data = FILE_PREFIX;
+        String aiQueens;
+        String otherQueens;
+
+        if(team.equals(WHITE)){
+            aiQueens = String.join(", ", translatePositions(redQueens));
+            otherQueens = String.join(", ", translatePositions(blueQueens));
+        }else{
+            aiQueens = String.join(", ", translatePositions(blueQueens));
+            otherQueens = String.join(", ", translatePositions(redQueens));
+        }
+
+        // The AI can only be tricked into playing as red, so we gotta flip the board upside down just to that the AI gets to play as red
+        data    += RED_AMAZONS + aiQueens + "\n"
+                + BLUE_AMAZONS + otherQueens+ "\n";
+
+        data += ARROWS + String.join(", ", translatePositions(arrows)) + "\n";
+        //data += team.equals(Team.WHITE) ? FILE_SUFFIX_WHITE: FILE_SUFFIX_BLACK_1 + translateMoves(moves) + FILE_SUFFIX_BLACK_2;
+        data += FILE_SUFFIX;
+
         try(OutputStream os = new FileOutputStream(destination)){
             os.write(data.getBytes(), 0, data.length());
         } catch (FileNotFoundException e) {
@@ -85,13 +104,13 @@ public class InvaderGameLog {
 //        for(Move move: moves){
 //            String latestMove = "";
 //            String yStartTrans = "" + (10 - move.getQueenPos().getY());
-//            String xStartTrans = columnToLetter(move.getQueenPos().getY());
+//            String xStartTrans = columnToLetter(move.getQueenPos().getX());
 //
 //            String yMoveTrans = "" + (10 - move.getQueenMove().getY());
-//            String xMoveTrans = columnToLetter(move.getQueenMove().getY());
+//            String xMoveTrans = columnToLetter(move.getQueenMove().getX());
 //
 //            String yArrowTrans = "" + (10 - move.getArrow().getY());
-//            String xArrowTrans = columnToLetter(move.getArrow().getY());
+//            String xArrowTrans = columnToLetter(move.getArrow().getX());
 //
 //            latestMove += moveCount + ". ";
 //            latestMove += xStartTrans + yStartTrans + " - ";
@@ -105,7 +124,7 @@ public class InvaderGameLog {
 //            }
 //            moveCount+=1;
 //        }
-//        return data;
+//        return data + "\n";
 //    }
 
     private static String columnToLetter(int y) {
@@ -144,12 +163,13 @@ public class InvaderGameLog {
     public static Move getLastMove(File logFile) throws Exception{
         FileReader fr = new FileReader(logFile);
         BufferedReader reader = new BufferedReader(fr);
-        List<String> tmp = new ArrayList<String>();
+        List<String> tmp = new ArrayList<>();
         String ch = "";
         do {
             ch = reader.readLine();
             tmp.add(ch);
         } while (ch != null);
+
         for(int i=tmp.size()-1;i>=0;i--) {
             String line = tmp.get(i);
             if(line == null){
@@ -157,7 +177,7 @@ public class InvaderGameLog {
             }
             line = line.trim();
             if(line.contains(".")){
-                int startIndex = line.indexOf("."); //first index so we grab only hte first move if the AI somehow plays multiple
+                int startIndex = line.lastIndexOf("."); //last index so we skip the dummy move when playing as black
                 String moveStr = line.substring(startIndex + 1).trim();
                 //System.out.println("movestr: " + moveStr);
                 StringCharacterIterator it = new StringCharacterIterator(moveStr);
@@ -174,11 +194,14 @@ public class InvaderGameLog {
                 it.next(); //open bracket
 
                 Position arrow = parsePosition(it, false);
-                Move aiMove =  new Move(queen, move, arrow, Team.BLACK);
+                Move aiMove =  new Move(queen, move, arrow, null);
                 System.out.println("Ai made the move " + aiMove);
+                reader.close();
+                fr.close();
                 return aiMove;
             }
         }
+
         System.out.println("Failed to find any move lines???");
         reader.close();
         fr.close();
@@ -187,6 +210,7 @@ public class InvaderGameLog {
 
         throw new Exception("fuk");
     }
+
     private static Position parsePosition(StringCharacterIterator it, boolean start){
         int x;
         if(start){
@@ -209,10 +233,12 @@ public class InvaderGameLog {
     public static void main(String[] args) throws Exception{
         //System.out.println(getLastMove(new File("./resources/tmp/x.txt")));
         Board board = new Board();
-        List<BoardPiece> arrows = board.getPieces(Team.WHITE, BoardPiece.PieceType.ARROW);
+        List<BoardPiece> arrows = board.getPieces(WHITE, BoardPiece.PieceType.ARROW);
         arrows.addAll(board.getPieces(Team.BLACK, BoardPiece.PieceType.ARROW));
-        InvaderGameLog.writeLog(new File("./resources/tmp/i_hate_myself.txt"),
-                board.getPieces(Team.WHITE, BoardPiece.PieceType.QUEEN),
+
+        InvaderGameLog.writeLog(WHITE, new File("./resources/tmp/i_hate_myself.txt"),
+                board.getMoveLog(),
+                board.getPieces(WHITE, BoardPiece.PieceType.QUEEN),
                 board.getPieces(Team.BLACK, BoardPiece.PieceType.QUEEN),
                 arrows);
     }

@@ -68,4 +68,8 @@ public abstract class AbstractPlayer {
             return options.get(rand.nextInt(options.size() - 1));
         }
     }
+
+    public Team getTeam() {
+        return team;
+    }
 }

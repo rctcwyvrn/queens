@@ -14,7 +14,7 @@ public class RMCQueenAIPlayer extends AbstractPlayer{
 
     public RMCQueenAIPlayer(Team team) {
         super(team);
-        client.reset();
+        client.reset(); //TODO: Figure out why gameClient is null in Amazon.java if I don't do this here
     }
 
     @Override

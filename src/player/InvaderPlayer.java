@@ -20,6 +20,7 @@ import java.util.List;
 /**
  * Plays using the invader2.1 executable
  * Does some sketchy ass shit. All coordinates are based on the default size window in the upper left corner of a 1920x1080p screen
+ * Currently can't play invader vs invader because I'm too lazy to make the system type in the team color to differentiate them
  */
 public class InvaderPlayer extends AbstractPlayer {
     private static final int BUTTON_ROW_Y = 66;
@@ -57,7 +58,8 @@ public class InvaderPlayer extends AbstractPlayer {
                 System.out.println("Writing new queen and arrow positions to log file " + logFileIn.getPath());
                 List<BoardPiece> arrows = board.getPieces(Team.WHITE, BoardPiece.PieceType.ARROW);
                 arrows.addAll(board.getPieces(Team.BLACK, BoardPiece.PieceType.ARROW));
-                InvaderGameLog.writeLog(logFileIn,
+                InvaderGameLog.writeLog(team, logFileIn,
+                        board.getMoveLog(),
                         board.getPieces(Team.WHITE, BoardPiece.PieceType.QUEEN),
                         board.getPieces(Team.BLACK, BoardPiece.PieceType.QUEEN),
                         arrows);
@@ -132,6 +134,12 @@ public class InvaderPlayer extends AbstractPlayer {
         // stop game
         click(BUTTON_ROW_X_PAUSE+20, BUTTON_ROW_Y);
     }
+
+    /**
+     *
+     * @param overwrite if we expect the file to already exist and will be overwriting it
+     * @throws Exception
+     */
     public void saveBoard(boolean overwrite) throws Exception{
         //click the "win" button just in case we maybe won!
         click(422, 294);
@@ -149,6 +157,7 @@ public class InvaderPlayer extends AbstractPlayer {
         type(KeyEvent.VK_0 + (invaderPlays % 10));
         type(KeyEvent.VK_I);
         type(KeyEvent.VK_ENTER);
+
         if(overwrite) {
             type(KeyEvent.VK_LEFT);
             Thread.sleep(500);
@@ -174,18 +183,17 @@ public class InvaderPlayer extends AbstractPlayer {
         }
     }
 
+    // Helpful little thing to get the xy coordinates recalibrated if the window gets resized or moved or w/e
     public static void main(String[] args) throws Exception{
-        InvaderPlayer player = new InvaderPlayer(Team.WHITE);
-        player.cleanup();
         System.out.println("Starting");
 
-//        Thread.sleep(5000);  // some time for user to position mouse
-//        Point spot = MouseInfo.getPointerInfo().getLocation();
-//        System.out.println(
-//                String.valueOf(spot.getX())
-//                        +","+
-//                        String.valueOf(spot.getY()));
-//
-//        Thread.sleep(1000);
+        Thread.sleep(5000);  // some time for user to position mouse
+        Point spot = MouseInfo.getPointerInfo().getLocation();
+        System.out.println(
+                String.valueOf(spot.getX())
+                        +","+
+                        String.valueOf(spot.getY()));
+
+        Thread.sleep(1000);
     }
 }
