@@ -22,6 +22,7 @@ Current players:
     *  Uses the Invader2.1 found here http://www.csun.edu/~lorentz/amazon.htm
 6. Diluted AI players
     *  Play the move from an AI x% of the time, playing random moves the rest of the time
+
 Planned players:
 1. Monte carlo based AI player
 2. Straight
