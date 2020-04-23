@@ -1,0 +1,42 @@
+<GAME-INFO-START>
+
+Players:
+  Red  - Computer (~3s)
+  Blue - Computer (~3s)
+
+RED-TYPE=1:1:5:3:Computer
+BLUE-TYPE=1:1:5:3:Computer
+
+Game Time:
+  Red  - 00:00:00
+  Blue - 00:00:00
+
+RED-TIME=0
+BLUE-TIME=0
+
+Red Amazons:
+  A4 D1 G1 J4 
+
+Blue Amazons:
+  A7 D10 G10 J7 
+
+Arrows:
+
+<GAME-INFO-END>
+
+<BOARD-SETUP-START>
+
+RED-AMAZONS=A4, D1, G1, J4
+BLUE-AMAZONS=A7, D10, G10, J7
+ARROWS=
+COLUMNS=10
+ROWS=10
+
+<BOARD-SETUP-END>
+
+<MOVE-HISTORY-START>
+
+Red/Blue
+
+
+<MOVE-HISTORY-END>
