@@ -8,6 +8,8 @@ public enum PlayerType {
     Test(TestPlayer.class),
     Random(RandomPlayer.class),
     Headshot(HeadshotsOnlyPlayer.class),
+    Assasin(AssasinPlayer.class),
+    Invader(InvaderPlayer.class),
     RMCQueenAI(RMCQueenAIPlayer.class);
 
     private Class<? extends AbstractPlayer> player;

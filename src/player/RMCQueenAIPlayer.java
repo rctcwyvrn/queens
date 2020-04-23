@@ -5,6 +5,10 @@ import ygraphs.ai.smart_fox.games.GameClient;
 
 import java.util.List;
 
+/**
+ * Uses the amazons ai from https://github.com/rctcwyvrn/game-of-the-amazons-ai
+ * Original author: https://github.com/rmcqueen
+ */
 public class RMCQueenAIPlayer extends AbstractPlayer{
     private GameClient client = GameClient.CLIENT_INSTANCE;
 

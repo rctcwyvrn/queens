@@ -5,6 +5,7 @@ import ygraphs.ai.smart_fox.games.Queen;
 import java.util.*;
 import java.util.stream.Collectors;
 public class Board {
+    private static final boolean DEBUG = true;
     private List<BoardPiece> pieces = new ArrayList<>();
     private List<Move> moveLog = new ArrayList<>();
 
@@ -66,7 +67,7 @@ public class Board {
             if(validArrows.contains(arrow)){
                 pieces.add(new BoardPiece(BoardPiece.PieceType.ARROW, team, arrow));
                 moveLog.add(new Move(oldPos, move, arrow, team));
-                //System.out.println(team + " has chosen the queen at " + oldPos + " and plans to move it to " + move + ", and to fire an arrow to " + arrow);
+                if(DEBUG) System.out.println(team + " has chosen the queen at " + oldPos + " and plans to move it to " + move + ", and to fire an arrow to " + arrow);
             } else {
                 System.out.println("Attempted to make an invalid shot: From " + queen.getPos() + " to " + arrow );
                 System.exit(1);

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Attempts to shoot arrows as close as possible to any enemy queens
+ */
 public class HeadshotsOnlyPlayer extends AbstractPlayer {
     public HeadshotsOnlyPlayer(Team team) {
         super(team);
@@ -18,9 +21,9 @@ public class HeadshotsOnlyPlayer extends AbstractPlayer {
     @Override
     public Board play(Board board) {
         List<Position> enemyQueens = board.getPieces(team.getOther(), BoardPiece.PieceType.QUEEN).stream().map(x -> x.getPos()).collect(Collectors.toList());
-        Map<Position, Map<Position, List<Position>>> allMoves = getAllMoves(board);
+        Map<BoardPiece, Map<Position, List<Position>>> allMoves = getAllMoves(board);
         int shortestDist = 1000;
-        Position queen = null;
+        BoardPiece queen = null;
         Position move = null;
         Position shot = null;
         for(Map<Position, List<Position>> possibleMoves: allMoves.values()){
@@ -28,11 +31,11 @@ public class HeadshotsOnlyPlayer extends AbstractPlayer {
                 for(Position arrow: arrows){
                     for(Position enemy: enemyQueens){
                         if(arrow.dist(enemy) < shortestDist){
-                            queen = (Position) allMoves.entrySet().stream().filter(x -> x.getValue().equals(possibleMoves)).map(x -> x.getKey()).toArray()[0];
+                            queen = (BoardPiece) allMoves.entrySet().stream().filter(x -> x.getValue().equals(possibleMoves)).map(x -> x.getKey()).toArray()[0];
                             move = (Position) possibleMoves.entrySet().stream().filter(x-> x.getValue().contains(arrow)).map(x -> x.getKey()).toArray()[0];
                             shot = arrow;
                             if(arrow.dist(enemy) == 1){
-                                board.moveQueenAndFire(team, board.getQueenAt(queen), move, shot);
+                                board.moveQueenAndFire(team, queen, move, shot);
                                 return board;
                             }
                         }
@@ -40,7 +43,7 @@ public class HeadshotsOnlyPlayer extends AbstractPlayer {
                 }
             }
         }
-        board.moveQueenAndFire(team, board.getQueenAt(queen), move, shot);
+        board.moveQueenAndFire(team, queen, move, shot);
         return board;
     }
 }

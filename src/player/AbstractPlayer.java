@@ -5,17 +5,17 @@ import state.BoardPiece;
 import state.Position;
 import state.Team;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractPlayer {
     protected Team team;
-    public abstract Board play(Board board);
+    protected Random rand = new Random();
 
     public AbstractPlayer(Team team){
         this.team = team;
     }
+
+    public abstract Board play(Board board);
 
     public boolean hasMoves(Board board){
         for(BoardPiece queen: board.getPieces(this.team, BoardPiece.PieceType.QUEEN)){
@@ -26,11 +26,45 @@ public abstract class AbstractPlayer {
         return false;
     }
 
-    protected Map<Position, Map<Position, List<Position>>> getAllMoves(Board board){
-        Map<Position, Map<Position, List<Position>>> allMoves = new HashMap<>();
+    protected Map<BoardPiece, Map<Position, List<Position>>> getAllMoves(Board board){
+        Map<BoardPiece, Map<Position, List<Position>>> allMoves = new HashMap<>();
         for(BoardPiece queen: board.getPieces(this.team, BoardPiece.PieceType.QUEEN)){
-            allMoves.put(queen.getPos(), board.getValidMoves(queen.getPos()));
+            allMoves.put(queen, board.getValidMoves(queen.getPos()));
         }
         return allMoves;
+    }
+
+    /**
+     * Moved from RandomPlayer to here because most of the AIs will have an endgame of playing random moves
+     * @param board
+     * @return
+     */
+    protected Board playRandomMove(Board board){
+        List<BoardPiece> moveableQueens = board.getQueensWithValidMoves(team);
+        BoardPiece chosenQueen = randomChoice(moveableQueens);
+
+        Map<Position,List<Position>> movesAndArrows = board.getValidMoves(chosenQueen.getPos());
+        List<Position> possibleMoves = new ArrayList<>(movesAndArrows.keySet());
+        Position move = randomChoice(possibleMoves);
+
+        List<Position> possibleArrows = movesAndArrows.get(move);
+        Position arrow = randomChoice(possibleArrows);
+
+        board.moveQueenAndFire(team, chosenQueen, move, arrow);
+        return board;
+    }
+    /**
+     * Lots of players use randomness to make decisions (because they're bad) so I'm putting this here
+     * Grumble grumble why doesn't java have this by default
+     * @param options
+     * @param <T>
+     * @return
+     */
+    protected <T> T randomChoice(List<T> options){
+        if(options.size() == 1){
+            return options.get(0);
+        }else{
+            return options.get(rand.nextInt(options.size() - 1));
+        }
     }
 }
