@@ -13,6 +13,9 @@ public enum PlayerType {
     Invader(InvaderPlayer.class),
     Invader_50(RandomMovesDecorator.class),
     Invader_10(RandomMovesDecorator.class),
+    Straight(StraightPlayer.class),
+    UpClose(UpClosePlayer.class),
+    Mob(MobPlayer.class),
     RMCQueenAI(RMCQueenAIPlayer.class);
 
     private Class<? extends AbstractPlayer> player;

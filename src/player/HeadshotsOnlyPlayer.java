@@ -6,6 +6,7 @@ import state.Position;
 import state.Team;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class HeadshotsOnlyPlayer extends AbstractPlayer {
     @Override
     public Board play(Board board) {
         List<Position> enemyQueens = board.getPieces(team.getOther(), BoardPiece.PieceType.QUEEN).stream().map(x -> x.getPos()).collect(Collectors.toList());
+        Collections.shuffle(enemyQueens);
         Map<BoardPiece, Map<Position, List<Position>>> allMoves = getAllMoves(board);
         int shortestDist = 1000;
         BoardPiece queen = null;

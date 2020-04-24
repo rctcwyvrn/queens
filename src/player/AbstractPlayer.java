@@ -18,13 +18,16 @@ public abstract class AbstractPlayer {
     public abstract Board play(Board board);
     public abstract void cleanup();
 
-    public boolean hasMoves(Board board){
-        for(BoardPiece queen: board.getPieces(this.team, BoardPiece.PieceType.QUEEN)){
-            if(!board.getValidMoves(queen.getPos()).isEmpty()){
-                return true;
-            }
+    public int movesLeft(Board board) {
+        int moves = 0;
+        for (BoardPiece queen : board.getPieces(this.team, BoardPiece.PieceType.QUEEN)) {
+            moves+= board.getValidMoves(queen.getPos()).size();
         }
-        return false;
+        return moves;
+    }
+
+    public boolean hasMoves(Board board){
+        return movesLeft(board) != 0;
     }
 
     protected Map<BoardPiece, Map<Position, List<Position>>> getAllMoves(Board board){
@@ -36,7 +39,7 @@ public abstract class AbstractPlayer {
     }
 
     /**
-     * Moved from RandomPlayer to here because most of the AIs will have an endgame of playing random moves
+     * Moved from RandomPlayer to here because most of the AIs will eventually play random moves once their strategy fails
      * @param board
      * @return
      */
@@ -67,6 +70,18 @@ public abstract class AbstractPlayer {
         }else{
             return options.get(rand.nextInt(options.size() - 1));
         }
+    }
+
+    protected Position getClosest(Collection<Position> poss, Position target){
+        int bestDist = 9999;
+        Position best = null;
+        for(Position p: poss){
+            if(target.dist(p) < bestDist){
+                best = p;
+                bestDist = target.dist(p);
+            }
+        }
+        return best;
     }
 
     public Team getTeam() {

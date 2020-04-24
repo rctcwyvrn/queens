@@ -43,8 +43,14 @@ public class AssasinPlayer extends AbstractPlayer{
             for(List<Position> arrows: possibleMoves.values()){
                 for(Position arrow: arrows){
                     if(arrow.dist(targetPos) == 1){
-                        BoardPiece queen = (BoardPiece) allMoves.entrySet().stream().filter(x -> x.getValue().equals(possibleMoves)).map(x -> x.getKey()).toArray()[0];
-                        Position move = (Position) possibleMoves.entrySet().stream().filter(x-> x.getValue().contains(arrow)).map(x -> x.getKey()).toArray()[0];
+                        BoardPiece queen = (BoardPiece) allMoves.entrySet().stream()
+                                .filter(x -> x.getValue().equals(possibleMoves))
+                                .map(x -> x.getKey())
+                                .toArray()[0];
+                        Position move = (Position) possibleMoves.entrySet().stream()
+                                .filter(x-> x.getValue().contains(arrow))
+                                .map(x -> x.getKey())
+                                .toArray()[0];
                         Position shot = arrow;
                         board.moveQueenAndFire(team, queen, move, shot);
                         return board;
@@ -59,7 +65,8 @@ public class AssasinPlayer extends AbstractPlayer{
             currTarget = null;
             return play(board);
         }else{
-            return playRandomMove(board);
+            return playRandomMove(board); // seems like never playing random, moving on to new targets, and then switching to headshots is the best combination
+            // this player reliably beats headshot too, which is pretty cool
         }
     }
 

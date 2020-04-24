@@ -10,6 +10,7 @@ public class Board {
     private List<Move> moveLog = new ArrayList<>();
 
     public Board(){
+        BoardPiece.resetQueenCount();
         pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_1));
         pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_2));
         pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_3));
@@ -53,7 +54,7 @@ public class Board {
         }
 
         if (!queen.getType().equals(BoardPiece.PieceType.QUEEN) && queen.getTeam().equals(team)) {
-            System.out.println("Given piece is an arrow not a queen or is on the wrong team");
+            System.out.println("Given piece is an arrow and not a queen, or is on the wrong team");
             System.exit(1);
         }
 
@@ -85,6 +86,15 @@ public class Board {
             System.out.println("Failed to find a queen at position " + pos);
         }
         return xs.get(0);
+    }
+
+    public BoardPiece findQueenWithID(Integer id) {
+        List<BoardPiece> queen = pieces.stream().filter(x -> x.getType().equals(BoardPiece.PieceType.QUEEN)).filter(x -> x.getQueenID() == id).collect(Collectors.toList());
+        if(queen.size() != 1){
+            System.out.println("Mulitple or no queens with the given id = " + id);
+            System.exit(1);
+        }
+        return queen.get(0);
     }
 
     public Map<Position,List<Position>> getValidMoves(Position startPosition){
@@ -259,6 +269,6 @@ public class Board {
             boardLayout += "|";
         }
         boardLayout += line;
-        return boardLayout;
+        return boardLayout + "\n";
     }
 }

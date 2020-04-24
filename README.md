@@ -5,7 +5,7 @@ Inspired by the collection of various chess players in [this video](https://www.
 I decided to try to replicate it with another game, the game of the amazons.
 
 Game of the amazons is a fun mix between chess and go, taking the idea of pieces and movement from chess 
-and the idea of territory and capture from go.
+and the idea of territory and capture from go. [More about the game](https://www.youtube.com/watch?v=kjSOSeRZVNg)
 
 Current players:
 1. Random
@@ -25,6 +25,7 @@ Current players:
 
 Planned players:
 1. Monte carlo based AI player
+    *  https://github.com/EthanWelsh/Game-of-the-Amazons
 2. Straight
     *  Move and shoot straight only
 3. Bishop
@@ -41,7 +42,7 @@ Planned players:
     *  Assemble into a line and attempt to "march" forward
 9. Up close and personal
     *  Move each queen up to one of the enemy queens and follow it around
-10.  Mob
+10. Mob
     *  Move all four queens up to a target and box it in
 11. Buddy system
     *  Use an AI for every other move, and just attempting to copy that move with a "buddy"

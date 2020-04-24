@@ -14,11 +14,13 @@ public class GameResult {
     private PlayerType winner;
     private List<Move> moveLog;
     private int roundCount;
+    private int winningScore;
 
-    public GameResult(Team team, PlayerType winner, List<Move> moveLog, int roundCount, long runtime) {
+    public GameResult(Team team, PlayerType winner, List<Move> moveLog, int winningScore, int roundCount, long runtime) {
         this.team = team;
         this.winner = winner;
         this.moveLog = moveLog;
+        this.winningScore = winningScore;
         this.roundCount = roundCount;
         this.runtime = runtime;
     }
@@ -46,6 +48,7 @@ public class GameResult {
                 ", team=" + team +
                 ", winner=" + winner +
                 ", roundCount=" + roundCount +
+                ", winningScore=" + winningScore +
                 '}';
     }
 }
