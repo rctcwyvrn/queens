@@ -6,6 +6,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 public class Board {
     public static final boolean DEBUG = true;
+    public static final int BOARD_WIDTH = 10;
+    public static final int BOARD_HEIGHT = 10;
+
     private List<BoardPiece> pieces = new ArrayList<>();
     private List<Move> moveLog = new ArrayList<>();
 
@@ -124,7 +127,7 @@ public class Board {
         Position newPos;
 
         // RIGHT
-        for(int i = x + 1; i <= 9; i ++){
+        for(int i = x + 1; i < BOARD_WIDTH; i ++){
             newPos = new Position(i,y);
             // If there's something in the way then break out of the loop
             if(allPositions.contains(newPos)) {
@@ -143,7 +146,7 @@ public class Board {
         }
 
         // DOWN
-        for(int i = y + 1; i <= 9; i ++){
+        for(int i = y + 1; i < BOARD_HEIGHT; i ++){
             newPos = new Position(x,i);
             if(allPositions.contains(newPos)){
                 break;
@@ -180,7 +183,7 @@ public class Board {
         tempY = y;
         tempX+=1;
         tempY-=1;
-        while(tempX <= 9 && tempY >= 0){
+        while(tempX < BOARD_WIDTH && tempY >= 0){
             newPos = new Position(tempX,tempY);
             if(allPositions.contains(newPos)){
                 break;
@@ -195,7 +198,7 @@ public class Board {
         tempY = y;
         tempX-=1;
         tempY+=1;
-        while(tempX >= 0 && tempY <= 9){
+        while(tempX >= 0 && tempY < BOARD_HEIGHT){
             newPos = new Position(tempX,tempY);
             if(allPositions.contains(newPos)){
                 break;
@@ -210,7 +213,7 @@ public class Board {
         tempY = y;
         tempX+=1;
         tempY+=1;
-        while(tempX <= 9 && tempY <= 9 ){
+        while(tempX < BOARD_WIDTH && tempY < BOARD_HEIGHT ){
             newPos = new Position(tempX,tempY);
             if(allPositions.contains(newPos)){
                 break;
@@ -243,9 +246,12 @@ public class Board {
         }
     }
     public String displayBoard(){
-        String[][] board = new String[10][];
-        String[] display = new String[]{"  ","  ","  ","  ","  ","  ","  ","  ","  ","  "};
-        for(int y = 0; y <= 9; y++){
+        String[][] board = new String[BOARD_HEIGHT][];
+        String[] display = new String[BOARD_WIDTH];
+        for(int x = 0; x < BOARD_WIDTH; x++){
+            display[x] = "  ";
+        }
+        for(int y = 0; y < BOARD_HEIGHT; y++){
             board[y] = display.clone();
         }
 
@@ -255,16 +261,16 @@ public class Board {
             : "x ";
 
             Position pos = piece.getPos();
-            board[pos.getX()][pos.getY()] = pieceStr;
+            board[pos.getY()][pos.getX()] = pieceStr;
         }
 
         String boardLayout = "";
-        String line = "\nx--- --- --- --- --- --- --- --- --- ---x";
-        for (int y = 0; y < 10; y++) {
+        String line = "\nx" + new String(new char[BOARD_WIDTH]).replace("\0", "--- ").trim() + "x";
+        for (int y = 0; y < BOARD_HEIGHT; y++) {
             boardLayout += line + "\n";
-            for (int x = 0; x < 10; x++) {
+            for (int x = 0; x < BOARD_WIDTH; x++) {
                 boardLayout += "| ";
-                boardLayout += board[x][y];
+                boardLayout += board[y][x];
             }
             boardLayout += "|";
         }

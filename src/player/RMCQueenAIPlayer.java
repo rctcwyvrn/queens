@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Uses the amazons ai from https://github.com/rctcwyvrn/game-of-the-amazons-ai
  * Original author: https://github.com/rmcqueen
+ * Can't play anything other than 10x10 boards!
  */
 public class RMCQueenAIPlayer extends AbstractPlayer{
     private GameClient client = GameClient.CLIENT_INSTANCE;

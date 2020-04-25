@@ -16,6 +16,8 @@ public enum PlayerType {
     Straight(StraightPlayer.class),
     UpClose(UpClosePlayer.class),
     Mob(MobPlayer.class),
+    VerticalSym(VerticalSymmetryPlayer.class),
+    HorizontalSym(HorizontalSymmetryPlayer.class),
     RMCQueenAI(RMCQueenAIPlayer.class);
 
     private Class<? extends AbstractPlayer> player;

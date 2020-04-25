@@ -19,7 +19,7 @@ public class Position {
     private int y;
 
     public Position(int x, int y){
-        if(x < 0 || x > 9 || y < 0 || y > 9){
+        if(x < 0 || x >= Board.BOARD_WIDTH || y < 0 || y >= Board.BOARD_HEIGHT){
             System.out.println("INVALID BOARD POSITION GIVEN: x = " + x + ", y = " + y);
             System.exit(-1);
         }
