@@ -32,6 +32,9 @@ public class InvaderPlayer extends AbstractPlayer {
     private File logFileOut= new File("./resources/tmp/0i.txt");
     private int invaderPlays = 0;
 
+    static{
+        System.setProperty("java.awt.headless", "false"); // We're running it headless but we need awt
+    }
     public InvaderPlayer(Team team) {
         super(team);
         try {

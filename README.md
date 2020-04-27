@@ -37,7 +37,7 @@ Planned players:
     *  Move and shot diagonally only
 3. ScaredyCat
     *  Move all the queens to a corner and try to stay there
-4. Everyone for themselves
+4. Corner (Everyone for themselves)
     *  Move the 4 queens to their own corner and try to stay there
 5. Evade like hell
     *  Try to keep each amazon in an open 3x3 square

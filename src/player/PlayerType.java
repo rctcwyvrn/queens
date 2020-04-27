@@ -18,6 +18,9 @@ public enum PlayerType {
     Mob(MobPlayer.class),
     VerticalSym(VerticalSymmetryPlayer.class),
     HorizontalSym(HorizontalSymmetryPlayer.class),
+    DiagonalSym(DiagonalSymmetricPlayer.class),
+    Corner(CornerPlayer.class),
+    AlternateCorner(AlternateCornerPlayer.class),
     RMCQueenAI(RMCQueenAIPlayer.class);
 
     private Class<? extends AbstractPlayer> player;
@@ -35,9 +38,18 @@ public enum PlayerType {
         try {
             return this.player.getDeclaredConstructor(Team.class).newInstance(team);
         } catch (Exception e){
+            e.printStackTrace();
             System.out.println("Failed to do my black magic reflect bullshit");
             System.exit(1);
             return null;
         }
     }
+
+    public static PlayerType[] nonAIPlayers = new PlayerType[]{
+            Random, Headshot, Assasin, Straight, UpClose, Mob, VerticalSym, HorizontalSym, DiagonalSym, Corner, AlternateCorner
+    };
+
+    public static PlayerType[] nonInvaderPlayers = new PlayerType[]{
+            Random, Headshot, Assasin, Straight, UpClose, Mob, VerticalSym, HorizontalSym, DiagonalSym, Corner, AlternateCorner, RMCQueenAI,
+    };
 }

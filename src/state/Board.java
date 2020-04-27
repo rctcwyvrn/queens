@@ -5,9 +5,10 @@ import ygraphs.ai.smart_fox.games.Queen;
 import java.util.*;
 import java.util.stream.Collectors;
 public class Board {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final int BOARD_WIDTH = 10;
     public static final int BOARD_HEIGHT = 10;
+    public static final Position CENTER = new Position(Math.floorDiv(BOARD_WIDTH, 2), Math.floorDiv(BOARD_HEIGHT, 2));
 
     private List<BoardPiece> pieces = new ArrayList<>();
     private List<Move> moveLog = new ArrayList<>();
@@ -257,7 +258,8 @@ public class Board {
 
         for(BoardPiece piece: pieces){
             String pieceStr = piece.getType() == BoardPiece.PieceType.QUEEN ?
-                piece.getTeam() == Team.WHITE ? "W " : "B "
+                //piece.getTeam() == Team.WHITE ? "W " : "B "
+                piece.getQueenID() + " "
             : "x ";
 
             Position pos = piece.getPos();

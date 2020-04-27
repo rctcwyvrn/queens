@@ -52,6 +52,7 @@ public class GameRunner {
                 player2.cleanup();
                 return new GameResult(Team.BLACK,
                         p2Type,
+                        p1Type,
                         state.getMoveLog(),
                         player2.movesLeft(state),
                         totalRounds,
@@ -69,6 +70,7 @@ public class GameRunner {
                 player2.cleanup();
                 return new GameResult(Team.WHITE,
                         p1Type,
+                        p2Type,
                         state.getMoveLog(),
                         player1.movesLeft(state),
                         totalRounds,
