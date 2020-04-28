@@ -60,6 +60,10 @@ public class Board {
             throw new InvalidStateException("Given piece is an arrow and not a queen, or is on the wrong team");
         }
 
+        if(getLastMove() != null && getLastMove().getTeam() != team.getOther()){
+            throw new InvalidStateException("Other player didn't make a move last turn?");
+        }
+
         Map<Position,List<Position>> movesAndArrows = getValidMoves(queen.getPos());
         Set<Position> validMoves = movesAndArrows.keySet();
         if (validMoves.contains(move)) {
@@ -91,7 +95,7 @@ public class Board {
     public BoardPiece findQueenWithID(Integer id) {
         List<BoardPiece> queen = pieces.stream().filter(x -> x.getType().equals(BoardPiece.PieceType.QUEEN)).filter(x -> x.getQueenID() == id).collect(Collectors.toList());
         if(queen.size() != 1){
-            System.out.println("Mulitple or no queens with the given id = " + id);
+            System.out.println("Multiple or no queens with the given id = " + id);
             System.exit(1);
         }
         return queen.get(0);

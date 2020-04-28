@@ -88,7 +88,8 @@ public class MobPlayer extends AbstractPlayer{
 //            return play(board);
 //        }
 
-        Position shot = randomChoice(allMoves.get(queen).get(bestMove));
+        //Position shot = randomChoice(allMoves.get(queen).get(bestMove));
+        Position shot = getClosest(allMoves.get(queen).get(bestMove), targetPos);
         board.moveQueenAndFire(team, queen, bestMove, shot);
         return board;
     }
