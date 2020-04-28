@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -21,7 +23,7 @@ public class StraightPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException  {
         List<BoardPiece> moveableQueens = board.getQueensWithValidMoves(team);
         Collections.shuffle(moveableQueens);
         for(BoardPiece chosenQueen: moveableQueens) {

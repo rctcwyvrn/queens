@@ -1,7 +1,7 @@
 import state.Position;
 
 public class PositionDistTest {
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception{
         //tests are a pain in the butt
         Position origin = new Position(0, 0);
 

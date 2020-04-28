@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -16,7 +18,7 @@ public class RandomPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         return playRandomMove(board);
     }
 

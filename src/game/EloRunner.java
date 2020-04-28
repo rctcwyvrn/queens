@@ -41,7 +41,10 @@ public class EloRunner {
         for(int i = 0; i < INVADER_GAMES_PER_MATCHUP; i++) {
             for(PlayerType invader: PlayerType.invaderPlayers) {
                 for (PlayerType other : PlayerType.nonInvaderPlayers) {
+                    System.out.println("Playing " + invader + " vs " + other);
                     results.add(GameRunner.playGame(invader, other));
+
+                    System.out.println("Playing " + other + " vs " + invader);
                     results.add(GameRunner.playGame(other, invader));
                 }
             }

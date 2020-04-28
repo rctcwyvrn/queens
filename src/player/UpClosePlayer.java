@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -17,7 +19,7 @@ public class UpClosePlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         if(!initialized){
             initialize(board);
         }

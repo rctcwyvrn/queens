@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Move;
@@ -50,7 +52,7 @@ public class InvaderPlayer extends AbstractPlayer {
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         int tries = 0;
         boolean overwrite = false;
         while(true) {
@@ -92,8 +94,7 @@ public class InvaderPlayer extends AbstractPlayer {
                 invaderProc.destroy();
                 System.out.println("InvaderAI failed! " + e.getMessage() + " | Retries = " + tries);
                 if(tries >= 3){
-                    System.out.println("Exiting :c");
-                    System.exit(1);
+                    throw new PlayerFailureException("Invader failed! Please restart");
                 }
             }
         }
@@ -163,7 +164,7 @@ public class InvaderPlayer extends AbstractPlayer {
         type(KeyEvent.VK_I);
         type(KeyEvent.VK_ENTER);
 
-        if(overwrite) {
+        if(overwrite) { // Hit overwrite file if we got an error and probably have an invalid save file with the same filename that we want to overwrite
             type(KeyEvent.VK_LEFT);
             Thread.sleep(500);
 

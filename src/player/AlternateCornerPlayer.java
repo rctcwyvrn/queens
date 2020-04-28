@@ -1,5 +1,6 @@
 package player;
 
+import exception.InvalidStateException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -16,7 +17,7 @@ public class AlternateCornerPlayer extends CornerPlayer{
         super(team);
     }
 
-    protected void chooseCorners(Board board){
+    protected void chooseCorners(Board board) throws InvalidStateException {
         List<BoardPiece> queens = board.getPieces(team, BoardPiece.PieceType.QUEEN);
         //Collections.shuffle(queens);
         corners.put(queens.get(0).getQueenID(), new Position(2,2));

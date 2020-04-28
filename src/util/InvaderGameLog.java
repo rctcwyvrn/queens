@@ -1,5 +1,6 @@
 package util;
 
+import exception.InvalidStateException;
 import state.*;
 
 import java.io.*;
@@ -211,7 +212,7 @@ public class InvaderGameLog {
         throw new Exception("fuk");
     }
 
-    private static Position parsePosition(StringCharacterIterator it, boolean start){
+    private static Position parsePosition(StringCharacterIterator it, boolean start) throws InvalidStateException {
         int x;
         if(start){
             x = letterToColumn(it.current());

@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -21,7 +23,7 @@ public class MobPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         if(currTarget != null && board.getValidMoves(currTarget.getPos()).isEmpty()) {
             oldTargets.add(currTarget);
             currTarget = null;

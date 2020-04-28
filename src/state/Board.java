@@ -1,5 +1,6 @@
 package state;
 
+import exception.InvalidStateException;
 import ygraphs.ai.smart_fox.games.Queen;
 
 import java.util.*;
@@ -8,7 +9,15 @@ public class Board {
     public static final boolean DEBUG = false;
     public static final int BOARD_WIDTH = 10;
     public static final int BOARD_HEIGHT = 10;
-    public static final Position CENTER = new Position(Math.floorDiv(BOARD_WIDTH, 2), Math.floorDiv(BOARD_HEIGHT, 2));
+    public static Position CENTER;
+
+    static {
+        try {
+            CENTER = new Position(Math.floorDiv(BOARD_WIDTH, 2), Math.floorDiv(BOARD_HEIGHT, 2));
+        } catch (InvalidStateException e) {
+            e.printStackTrace();
+        }
+    }
 
     private List<BoardPiece> pieces = new ArrayList<>();
     private List<Move> moveLog = new ArrayList<>();
@@ -42,15 +51,13 @@ public class Board {
     }
 
     // Only use this function to modify the board state. Must be called once per turn
-    public void moveQueenAndFire(Team team, BoardPiece queen, Position move, Position arrow) {
+    public void moveQueenAndFire(Team team, BoardPiece queen, Position move, Position arrow) throws InvalidStateException {
         if (!pieces.contains(queen)) {
-            System.out.println("Board does not contain the given queen");
-            System.exit(1);
+            throw new InvalidStateException("Board does not contain the given queen");
         }
 
         if (!queen.getType().equals(BoardPiece.PieceType.QUEEN) && queen.getTeam().equals(team)) {
-            System.out.println("Given piece is an arrow and not a queen, or is on the wrong team");
-            System.exit(1);
+            throw new InvalidStateException("Given piece is an arrow and not a queen, or is on the wrong team");
         }
 
         Map<Position,List<Position>> movesAndArrows = getValidMoves(queen.getPos());
@@ -65,13 +72,11 @@ public class Board {
                 moveLog.add(new Move(oldPos, move, arrow, team));
                 if(DEBUG) System.out.println(team + " has chosen the queen at " + oldPos + " and plans to move it to " + move + ", and to fire an arrow to " + arrow);
             } else {
-                System.out.println("Attempted to make an invalid shot: From " + queen.getPos() + " to " + arrow );
-                System.exit(1);
+                throw new InvalidStateException("Attempted to make an invalid shot: From " + queen.getPos() + " to " + arrow);
             }
 
         } else {
-            System.out.println("Attempted to make an invalid move " + queen.getPos() + " to " + move );
-            System.exit(1);
+            throw new InvalidStateException("Attempted to make an invalid move " + queen.getPos() + " to " + move );
         }
     }
 
@@ -117,102 +122,107 @@ public class Board {
         int x = startPosition.getX();
         int y = startPosition.getY();
         Position newPos;
-
-        // RIGHT
-        for(int i = x + 1; i < BOARD_WIDTH; i ++){
-            newPos = new Position(i,y);
-            // If there's something in the way then break out of the loop
-            if(allPositions.contains(newPos)) {
-                break;
+        try {
+            // RIGHT
+            for (int i = x + 1; i < BOARD_WIDTH; i++) {
+                newPos = new Position(i, y);
+                // If there's something in the way then break out of the loop
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-        }
 
-        // LEFT
-        for(int i = x - 1; i >= 0; i --){
-            newPos = new Position(i,y);
-            if(allPositions.contains(newPos)){
-                break;
+            // LEFT
+            for (int i = x - 1; i >= 0; i--) {
+                newPos = new Position(i, y);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-        }
 
-        // DOWN
-        for(int i = y + 1; i < BOARD_HEIGHT; i ++){
-            newPos = new Position(x,i);
-            if(allPositions.contains(newPos)){
-                break;
+            // DOWN
+            for (int i = y + 1; i < BOARD_HEIGHT; i++) {
+                newPos = new Position(x, i);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-        }
 
-        // UP
-        for(int i = y - 1; i >= 0; i --){
-            newPos = new Position(x,i);
-            if(allPositions.contains(newPos)){
-                break;
+            // UP
+            for (int i = y - 1; i >= 0; i--) {
+                newPos = new Position(x, i);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-        }
 
-        // UP LEFT diagonal
-        int tempX = x;
-        int tempY = y;
-        tempX-=1;
-        tempY-=1;
-        while(tempX >= 0 && tempY >= 0){
-            newPos = new Position(tempX,tempY);
-            if(allPositions.contains(newPos)){
-                break;
+            // UP LEFT diagonal
+            int tempX = x;
+            int tempY = y;
+            tempX -= 1;
+            tempY -= 1;
+            while (tempX >= 0 && tempY >= 0) {
+                newPos = new Position(tempX, tempY);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
+                tempX -= 1;
+                tempY -= 1;
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-            tempX-=1;
-            tempY-=1;
-        }
 
-        // UP RIGHT diagonal
-        tempX = x;
-        tempY = y;
-        tempX+=1;
-        tempY-=1;
-        while(tempX < BOARD_WIDTH && tempY >= 0){
-            newPos = new Position(tempX,tempY);
-            if(allPositions.contains(newPos)){
-                break;
+            // UP RIGHT diagonal
+            tempX = x;
+            tempY = y;
+            tempX += 1;
+            tempY -= 1;
+            while (tempX < BOARD_WIDTH && tempY >= 0) {
+                newPos = new Position(tempX, tempY);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
+                tempX += 1;
+                tempY -= 1;
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-            tempX+=1;
-            tempY-=1;
-        }
 
-        // DOWN LEFT diagonal
-        tempX = x;
-        tempY = y;
-        tempX-=1;
-        tempY+=1;
-        while(tempX >= 0 && tempY < BOARD_HEIGHT){
-            newPos = new Position(tempX,tempY);
-            if(allPositions.contains(newPos)){
-                break;
+            // DOWN LEFT diagonal
+            tempX = x;
+            tempY = y;
+            tempX -= 1;
+            tempY += 1;
+            while (tempX >= 0 && tempY < BOARD_HEIGHT) {
+                newPos = new Position(tempX, tempY);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
+                tempX -= 1;
+                tempY += 1;
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-            tempX-=1;
-            tempY+=1;
-        }
 
-        // DOWN RIGHT diagonal
-        tempX = x;
-        tempY = y;
-        tempX+=1;
-        tempY+=1;
-        while(tempX < BOARD_WIDTH && tempY < BOARD_HEIGHT ){
-            newPos = new Position(tempX,tempY);
-            if(allPositions.contains(newPos)){
-                break;
+            // DOWN RIGHT diagonal
+            tempX = x;
+            tempY = y;
+            tempX += 1;
+            tempY += 1;
+            while (tempX < BOARD_WIDTH && tempY < BOARD_HEIGHT) {
+                newPos = new Position(tempX, tempY);
+                if (allPositions.contains(newPos)) {
+                    break;
+                }
+                checkArrows(recurse, validMoves, newPos, startPosition);
+                tempX += 1;
+                tempY += 1;
             }
-            checkArrows(recurse, validMoves, newPos, startPosition);
-            tempX+=1;
-            tempY+=1;
+        }catch(InvalidStateException e){
+            System.out.println("Something went terribly wrong while finding new moves " + e);
+            e.printStackTrace();
+            System.exit(1);
         }
 
         return validMoves;

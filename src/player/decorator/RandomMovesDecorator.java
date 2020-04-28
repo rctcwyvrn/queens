@@ -1,5 +1,7 @@
 package player.decorator;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import player.AbstractPlayer;
 import state.Board;
 import state.Team;
@@ -19,7 +21,7 @@ public class RandomMovesDecorator extends AbstractPlayer {
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws PlayerFailureException, InvalidStateException {
         if(rand.nextInt(99) + 1 <= playPercent){
             return player.play(board);
         }else{

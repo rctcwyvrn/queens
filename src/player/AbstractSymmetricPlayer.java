@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.*;
 
 import java.util.List;
@@ -18,7 +20,7 @@ public abstract class AbstractSymmetricPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         Move lastMove = board.getLastMove();
         if(lastMove == null){ // If we go first
             return playRandomMove(board);
@@ -38,7 +40,7 @@ public abstract class AbstractSymmetricPlayer extends AbstractPlayer{
         return board;
     }
 
-    protected abstract Position mirror(Position original);
+    protected abstract Position mirror(Position original) throws InvalidStateException;
 
     @Override
     public void cleanup() {

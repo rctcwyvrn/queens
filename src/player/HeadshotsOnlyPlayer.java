@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -20,7 +22,7 @@ public class HeadshotsOnlyPlayer extends AbstractPlayer {
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         List<Position> enemyQueens = board.getPieces(team.getOther(), BoardPiece.PieceType.QUEEN).stream().map(x -> x.getPos()).collect(Collectors.toList());
         Collections.shuffle(enemyQueens);
         Map<BoardPiece, Map<Position, List<Position>>> allMoves = getAllMoves(board);

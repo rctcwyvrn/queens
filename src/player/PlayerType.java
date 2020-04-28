@@ -46,7 +46,7 @@ public enum PlayerType {
     }
 
     public static PlayerType[] invaderPlayers = new PlayerType[]{
-            Invader, Invader_10, Invader_50
+            Invader_10, Invader_50, Invader
     };
 
     public static PlayerType[] nonAIPlayers = new PlayerType[]{

@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -24,7 +26,7 @@ public class CornerPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         if(!initalized){
             chooseCorners(board);
             initalized = true;
@@ -58,7 +60,7 @@ public class CornerPlayer extends AbstractPlayer{
         return board;
     }
 
-    protected void chooseCorners(Board board){
+    protected void chooseCorners(Board board) throws InvalidStateException {
         List<BoardPiece> queens = board.getPieces(team, BoardPiece.PieceType.QUEEN);
         Collections.shuffle(queens);
         corners.put(queens.get(0).getQueenID(), new Position(0,0));

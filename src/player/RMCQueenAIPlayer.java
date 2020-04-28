@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.*;
 import ygraphs.ai.smart_fox.games.GameClient;
 
@@ -18,7 +20,7 @@ public class RMCQueenAIPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException  {
         Move lastMove = board.getLastMove();
         List<Position> AIPlay;
         if(lastMove == null){

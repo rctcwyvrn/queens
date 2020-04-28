@@ -1,27 +1,44 @@
 package state;
 
+import exception.InvalidStateException;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Position {
 
-    public static Position START_BLACK_1 = new Position(0,3);
-    public static Position START_BLACK_2 = new Position(3,0);
-    public static Position START_BLACK_3 = new Position(6,0);
-    public static Position START_BLACK_4 = new Position(9,3);
+    public static Position START_BLACK_1;
+    public static Position START_BLACK_2;
+    public static Position START_BLACK_3;
+    public static Position START_BLACK_4;
 
-    public static Position START_WHITE_1 = new Position(0,6);
-    public static Position START_WHITE_2 = new Position(3,9);
-    public static Position START_WHITE_3 = new Position(6,9);
-    public static Position START_WHITE_4 = new Position(9,6);
+    public static Position START_WHITE_1;
+    public static Position START_WHITE_2;
+    public static Position START_WHITE_3;
+    public static Position START_WHITE_4;
+
+    static {
+        try {
+            START_BLACK_1 = new Position(0,3);
+            START_BLACK_2 = new Position(3,0);
+            START_BLACK_3 = new Position(6,0);
+            START_BLACK_4 = new Position(9,3);
+
+            START_WHITE_1 = new Position(0,6);
+            START_WHITE_2 = new Position(3,9);
+            START_WHITE_3 = new Position(6,9);
+            START_WHITE_4 = new Position(9,6);
+        } catch (InvalidStateException e) {
+            e.printStackTrace();
+        }
+    }
 
     private int x;
     private int y;
 
-    public Position(int x, int y){
+    public Position(int x, int y) throws InvalidStateException {
         if(x < 0 || x >= Board.BOARD_WIDTH || y < 0 || y >= Board.BOARD_HEIGHT){
-            System.out.println("INVALID BOARD POSITION GIVEN: x = " + x + ", y = " + y);
-            System.exit(-1);
+            throw new InvalidStateException("INVALID BOARD POSITION GIVEN: x = " + x + ", y = " + y);
         }
         this.x = x;
         this.y = y;

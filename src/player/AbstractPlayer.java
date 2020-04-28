@@ -1,5 +1,7 @@
 package player;
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -15,7 +17,7 @@ public abstract class AbstractPlayer {
         this.team = team;
     }
 
-    public abstract Board play(Board board);
+    public abstract Board play(Board board) throws InvalidStateException, PlayerFailureException;
     public abstract void cleanup();
 
     public int movesLeft(Board board) {
@@ -43,7 +45,7 @@ public abstract class AbstractPlayer {
      * @param board
      * @return
      */
-    protected Board playRandomMove(Board board){
+    protected Board playRandomMove(Board board) throws InvalidStateException {
         List<BoardPiece> moveableQueens = board.getQueensWithValidMoves(team);
         BoardPiece chosenQueen = randomChoice(moveableQueens);
 

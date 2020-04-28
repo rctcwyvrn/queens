@@ -1,6 +1,8 @@
 package player;
 
 
+import exception.InvalidStateException;
+import exception.PlayerFailureException;
 import state.Board;
 import state.BoardPiece;
 import state.Position;
@@ -23,7 +25,7 @@ public class AssasinPlayer extends AbstractPlayer{
     }
 
     @Override
-    public Board play(Board board) {
+    public Board play(Board board) throws InvalidStateException, PlayerFailureException {
         if(oldTargets.size() == 4){
             //Play as headshot from now on
             return headshot.play(board);
