@@ -11,11 +11,10 @@ import java.util.List;
  * Can't play anything other than 10x10 boards!
  */
 public class RMCQueenAIPlayer extends AbstractPlayer{
-    private GameClient client = GameClient.CLIENT_INSTANCE;
+    private GameClient client = new GameClient();
 
     public RMCQueenAIPlayer(Team team) {
         super(team);
-        client.reset(); //TODO: Figure out why gameClient is null in Amazon.java if I don't do this here
     }
 
     @Override
@@ -35,6 +34,5 @@ public class RMCQueenAIPlayer extends AbstractPlayer{
 
     @Override
     public void cleanup() {
-        client.reset();
     }
 }

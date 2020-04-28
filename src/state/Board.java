@@ -13,17 +13,8 @@ public class Board {
     private List<BoardPiece> pieces = new ArrayList<>();
     private List<Move> moveLog = new ArrayList<>();
 
-    public Board(){
-        BoardPiece.resetQueenCount();
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_1));
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_2));
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_3));
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_4));
-
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_1));
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_2));
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_3));
-        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_4));
+    public Board(List<BoardPiece> pieces){
+        this.pieces = pieces;
     }
 
 
@@ -258,8 +249,8 @@ public class Board {
 
         for(BoardPiece piece: pieces){
             String pieceStr = piece.getType() == BoardPiece.PieceType.QUEEN ?
-                //piece.getTeam() == Team.WHITE ? "W " : "B "
-                piece.getQueenID() + " "
+                piece.getTeam() == Team.WHITE ? "W " : "B "
+                //piece.getQueenID() + " "
             : "x ";
 
             Position pos = piece.getPos();

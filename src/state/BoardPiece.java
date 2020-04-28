@@ -15,14 +15,34 @@ public class BoardPiece {
         ARROW, QUEEN
     }
 
-    public BoardPiece(PieceType type, Team team, Position pos){
-        if(queensMade > 8){
-            System.out.println("Tried to make more than 8 queens?");
+    public static Board createBoard(){
+        List<BoardPiece> pieces = new ArrayList<>();
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_1, 1));
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_2, 2));
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_3, 3));
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.WHITE, Position.START_WHITE_4, 4));
+
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_1, 5));
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_2, 6));
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_3, 7));
+        pieces.add(new BoardPiece(BoardPiece.PieceType.QUEEN, Team.BLACK, Position.START_BLACK_4, 8));
+        return new Board(pieces);
+    }
+
+    private BoardPiece(PieceType type, Team team, Position pos, int id){
+        if(!type.equals(PieceType.QUEEN)){
+            System.out.println("Wrong constructor! Use the one for arrows!");
             System.exit(1);
         }
+        this.type = type;
+        this.team = team;
+        this.pos = pos;
+        this.queenID = id;
+    }
+    public BoardPiece(PieceType type, Team team, Position pos){
         if(type.equals(PieceType.QUEEN)) {
-            queensMade += 1;
-            this.queenID = queensMade;
+            System.out.println("Wrong constructor! Use the one for queens!");
+            System.exit(1);
         }
         this.type = type;
         this.team = team;

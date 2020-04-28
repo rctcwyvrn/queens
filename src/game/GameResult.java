@@ -47,6 +47,9 @@ public class GameResult {
         return roundCount;
     }
 
+    public String convertToCSV(){
+        return winner + "," + loser + "," + winningScore + "," + roundCount + "," + runtime;
+    }
     @Override
     public String toString() {
         return "GameResult{" +

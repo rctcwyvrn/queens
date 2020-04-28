@@ -58,7 +58,7 @@ public class InvaderPlayer extends AbstractPlayer {
                 logFileIn = new File("./resources/tmp/" + invaderPlays + ".txt");
                 logFileOut = new File("./resources/tmp/" + invaderPlays + "i.txt");
 
-                System.out.println("Writing new queen and arrow positions to log file " + logFileIn.getPath());
+                //System.out.println("Writing new queen and arrow positions to log file " + logFileIn.getPath());
                 List<BoardPiece> arrows = board.getPieces(Team.WHITE, BoardPiece.PieceType.ARROW);
                 arrows.addAll(board.getPieces(Team.BLACK, BoardPiece.PieceType.ARROW));
                 InvaderGameLog.writeLog(team, logFileIn,
@@ -67,8 +67,11 @@ public class InvaderPlayer extends AbstractPlayer {
                         board.getPieces(Team.BLACK, BoardPiece.PieceType.QUEEN),
                         arrows);
 
-                invaderProc = Runtime.getRuntime().exec("./resources/invader.exe");
-                Thread.sleep(1500);
+                if(invaderProc == null || !invaderProc.isAlive()) {
+                    invaderProc = Runtime.getRuntime().exec("./resources/invader.exe");
+                    Thread.sleep(1500);
+                }
+
                 loadBoard();
 
                 //Thread.sleep(1000);
@@ -83,16 +86,15 @@ public class InvaderPlayer extends AbstractPlayer {
                 invaderPlays+=1;
                 return board;
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 tries+=1;
                 overwrite = true;
-                System.out.println("InvaderAI failed! Tries = " + tries);
+                invaderProc.destroy();
+                System.out.println("InvaderAI failed! " + e.getMessage() + " | Retries = " + tries);
                 if(tries >= 3){
                     System.out.println("Exiting :c");
                     System.exit(1);
                 }
-            } finally{
-                invaderProc.destroy();
             }
         }
     }
@@ -132,7 +134,7 @@ public class InvaderPlayer extends AbstractPlayer {
         Thread.sleep(1000); //varies depending on how long the AI takes to make a move, which is a mega pain in the ass
                                   // as the game ends the invader AI just stops, but we play til the bitter end
         click(BUTTON_ROW_X_PAUSE+247,BUTTON_ROW_Y); //force move
-        Thread.sleep(500); //wait for animation
+        Thread.sleep(600); //wait for animation
 
         // stop game
         click(BUTTON_ROW_X_PAUSE+20, BUTTON_ROW_Y);
@@ -183,6 +185,9 @@ public class InvaderPlayer extends AbstractPlayer {
     public void cleanup(){
         for(File f: new File("./resources/tmp").listFiles()){
             f.delete();
+        }
+        if(invaderProc != null && invaderProc.isAlive()){
+            invaderProc.destroy();
         }
     }
 

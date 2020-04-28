@@ -45,6 +45,10 @@ public enum PlayerType {
         }
     }
 
+    public static PlayerType[] invaderPlayers = new PlayerType[]{
+            Invader, Invader_10, Invader_50
+    };
+
     public static PlayerType[] nonAIPlayers = new PlayerType[]{
             Random, Headshot, Assasin, Straight, UpClose, Mob, VerticalSym, HorizontalSym, DiagonalSym, Corner, AlternateCorner
     };

@@ -40,7 +40,7 @@ public class GameRunner {
         AbstractPlayer player2 = p2Type.createPlayer(Team.BLACK);
         //System.out.println("Player #2 (BLACK): " + p2Type + " | " + player2);
 
-        Board state = new Board();
+        Board state = BoardPiece.createBoard(); // slightly sketchy to have the boardpiece create the board, but that does mean we get to keep the constructor for queens private
         if(PRINT_BOARDS || Board.DEBUG) System.out.println(state.displayBoard());
         int totalRounds = 0;
         long startTime = System.currentTimeMillis();

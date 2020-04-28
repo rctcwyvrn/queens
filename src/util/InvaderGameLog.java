@@ -195,14 +195,14 @@ public class InvaderGameLog {
 
                 Position arrow = parsePosition(it, false);
                 Move aiMove =  new Move(queen, move, arrow, null);
-                System.out.println("Ai made the move " + aiMove);
+                //System.out.println("Ai made the move " + aiMove);
                 reader.close();
                 fr.close();
                 return aiMove;
             }
         }
 
-        System.out.println("Failed to find any move lines???");
+        //System.out.println("Failed to find any move lines???");
         reader.close();
         fr.close();
         //System.exit(1);2i
@@ -228,18 +228,5 @@ public class InvaderGameLog {
         }
         int y = 10 - yCheck;
         return new Position(x,y);
-    }
-
-    public static void main(String[] args) throws Exception{
-        //System.out.println(getLastMove(new File("./resources/tmp/x.txt")));
-        Board board = new Board();
-        List<BoardPiece> arrows = board.getPieces(WHITE, BoardPiece.PieceType.ARROW);
-        arrows.addAll(board.getPieces(Team.BLACK, BoardPiece.PieceType.ARROW));
-
-        InvaderGameLog.writeLog(WHITE, new File("./resources/tmp/i_hate_myself.txt"),
-                board.getMoveLog(),
-                board.getPieces(WHITE, BoardPiece.PieceType.QUEEN),
-                board.getPieces(Team.BLACK, BoardPiece.PieceType.QUEEN),
-                arrows);
     }
 }
