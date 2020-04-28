@@ -19,20 +19,23 @@ import static java.util.stream.Collectors.toMap;
  *  Main runner for the project: Runs all the players against each other, outputs results in a csv, and calculates elo ratings for everyone
  */
 public class EloRunner {
-    private static final int GAMES_PER_MATCHUP = 2;
-    private static final int INVADER_GAMES_PER_MATCHUP = 1;
+    private static final int GAMES_PER_MATCHUP = 7;
+    private static final int INVADER_GAMES_PER_MATCHUP = 5;
     private static final int THREAD_COUNT = 8;
     private static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
 
     public static void main(String[] args) throws Exception{
         Map<PlayerType, EloRating> ratings = new EnumMap<PlayerType, EloRating>(PlayerType.class);
         List<GameResult> results = new ArrayList<>();
+        List<GameResult> invaderResults = new ArrayList<>();
 
         //PlayerType[] allPlayers = PlayerType.values();
         //PlayerType[] allPlayers = PlayerType.nonAIPlayers;
         //PlayerType[] allPlayers = PlayerType.nonInvaderPlayers;
 
-        System.out.println("Running tournament with " + GAMES_PER_MATCHUP + " iterations. ExecutorService nThreads = " + THREAD_COUNT);
+        System.out.println("Running tournament with " + GAMES_PER_MATCHUP + " iterations for normal players, " + INVADER_GAMES_PER_MATCHUP + " for invader players. " +
+                "ExecutorService nThreads = " + THREAD_COUNT);
+
         for(PlayerType p: PlayerType.values()){
             ratings.put(p, new EloRating());
         }
@@ -42,10 +45,10 @@ public class EloRunner {
             for(PlayerType invader: PlayerType.invaderPlayers) {
                 for (PlayerType other : PlayerType.nonInvaderPlayers) {
                     System.out.println("Playing " + invader + " vs " + other);
-                    results.add(GameRunner.playGame(invader, other));
+                    invaderResults.add(GameRunner.playGame(invader, other));
 
                     System.out.println("Playing " + other + " vs " + invader);
-                    results.add(GameRunner.playGame(other, invader));
+                    invaderResults.add(GameRunner.playGame(other, invader));
                 }
             }
         }
@@ -80,8 +83,31 @@ public class EloRunner {
             }
         }
 
+        // Extremely cheeky way of getting more accurate results
+        // Just duplicate the games instead of playing more 4head
+        // And since elo differences matter we can alternate them so that the invader results affect the normal results and vice versa
+        // this is all just an elaborate excuse to not have to run this even longer than I already have to
+
         Collections.shuffle(results);
         for(GameResult result: results){
+            PlayerType winner = result.getWinner();
+            PlayerType loser = result.getLoser();
+            EloRating.updateRatings(ratings.get(winner), ratings.get(loser));
+        }
+
+        for(GameResult result: invaderResults){
+            PlayerType winner = result.getWinner();
+            PlayerType loser = result.getLoser();
+            EloRating.updateRatings(ratings.get(winner), ratings.get(loser));
+        }
+
+        Collections.shuffle(results);
+        for(GameResult result: results){
+            PlayerType winner = result.getWinner();
+            PlayerType loser = result.getLoser();
+            EloRating.updateRatings(ratings.get(winner), ratings.get(loser));
+        }
+        for(GameResult result: invaderResults){
             PlayerType winner = result.getWinner();
             PlayerType loser = result.getLoser();
             EloRating.updateRatings(ratings.get(winner), ratings.get(loser));
@@ -97,10 +123,11 @@ public class EloRunner {
         Map<PlayerType, EloRating> sortedRatings = ratings.entrySet().stream().sorted(Map.Entry.comparingByValue(eloRatingComparator))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-        File eloOutputFile = new File("results/elo.txt");
+        File eloOutputFile = new File("results/elo.csv");
         try(PrintWriter pw = new PrintWriter(eloOutputFile)){
+            pw.println("Player,Elo");
             sortedRatings.entrySet().stream()
-                    .map(x -> x.getKey() + ": " + (int) x.getValue().getRating())
+                    .map(x -> x.getKey() + "," + (int) x.getValue().getRating())
                     .forEach(pw::println);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -110,6 +137,9 @@ public class EloRunner {
         try(PrintWriter pw = new PrintWriter(csvResultsFile)){
             pw.println("Winner,Loser,Score,Rounds,Runtime");
             results.stream()
+                    .map(x -> x.convertToCSV())
+                    .forEach(pw::println);
+            invaderResults.stream()
                     .map(x -> x.convertToCSV())
                     .forEach(pw::println);
         } catch (FileNotFoundException e) {

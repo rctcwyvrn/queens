@@ -6,7 +6,6 @@ import state.Team;
 import java.lang.reflect.InvocationTargetException;
 
 public enum PlayerType {
-    Test(TestPlayer.class),
     Random(RandomPlayer.class),
     Headshot(HeadshotsOnlyPlayer.class),
     Assasin(AssasinPlayer.class),
